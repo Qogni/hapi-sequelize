@@ -6,6 +6,7 @@ const Code = require('code');
 const Sinon = require('sinon');
 const Hapi = require('hapi');
 const Sequelize = require('sequelize');
+const Plugin = require('../lib');
 
 // Module globals
 const internals = {};
@@ -17,15 +18,13 @@ const expect = Code.expect;
 
 lab.suite('hapi-sequelize', () => {
 
-  test('plugin works', { parallel: true }, (done) => {
+  test('plugin works', { parallel: true }, async () => {
 
     const server = new Hapi.Server();
-    server.connection();
 
     const sequelize = new Sequelize('shop', 'root', '', {
-      host: '127.0.0.1',
-      port: 3306,
-      dialect: 'mysql'
+      storage: './database_' + process.env.NODE_ENV + '.sqlite',
+      dialect: 'sqlite'
     });
 
     const onConnect = function (database) {
@@ -34,9 +33,8 @@ lab.suite('hapi-sequelize', () => {
 
     const spy = Sinon.spy(onConnect);
 
-    server.register([
-      {
-        register: require('../lib'),
+    try {
+      await server.register(Object.assign(Plugin, {
         options: [
           {
             name: 'shop',
@@ -47,32 +45,29 @@ lab.suite('hapi-sequelize', () => {
             onConnect: spy
           }
         ]
-      }
-    ], (err) => {
-      expect(err).to.not.exist();
+      }))
+
       expect(server.plugins['hapi-sequelize']['shop'].sequelize).to.be.an.instanceOf(Sequelize);
       expect(spy.getCall(0).args[0]).to.be.an.instanceOf(Sequelize);
-      server.plugins['hapi-sequelize']['shop'].sequelize.query('show tables', { type: Sequelize.QueryTypes.SELECT }).then((tables) => {
-        expect(tables.length).to.equal(6);
-        done();
-      });
-    })
+
+      let tables = await server.plugins['hapi-sequelize']['shop'].sequelize.query('SELECT name FROM sqlite_master WHERE type=\'table\'', { type: Sequelize.QueryTypes.SELECT })
+      expect(tables.filter(table => !table.startsWith('sqlite_')).length).to.equal(6);
+    } catch (err) {
+      expect(err).to.not.exist();
+    }
   });
 
-  test('plugin throws error when no models are found', { parallel: true }, (done) => {
+  test('plugin throws error when no models are found', { parallel: true }, async () => {
 
     const server = new Hapi.Server();
-    server.connection();
 
     const sequelize = new Sequelize('shop', 'root', '', {
-      host: '127.0.0.1',
-      port: 3306,
-      dialect: 'mysql'
+      storage: './database_' + process.env.NODE_ENV + '.sqlite',
+      dialect: 'sqlite'
     });
 
-    server.register([
-      {
-        register: require('../lib'),
+    try {
+      await server.register(Object.assign(Plugin, {
         options: [
           {
             name: 'foo',
@@ -82,10 +77,9 @@ lab.suite('hapi-sequelize', () => {
             forceSync: true
           }
         ]
-      }
-    ], (err) => {
+      }));
+    } catch (err) {
       expect(err).to.exist();
-      done();
-    })
+    }
   });
 });

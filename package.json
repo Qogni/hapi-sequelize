@@ -29,23 +29,23 @@
   "author": "Dane Grant",
   "license": "MIT",
   "dependencies": {
-    "glob": "^7.0.3",
-    "joi": "^8.1.0"
+    "glob": "^7.1.2",
+    "joi": "^13.0.1"
   },
   "devDependencies": {
-    "code": "^4.0.0",
+    "code": "^5.1.0",
     "coveralls": "^2.11.14",
     "eslint": "^3.7.1",
-    "hapi": "^15.1.1",
-    "lab": "^11.1.0",
-    "mysql": "^2.10.2",
+    "hapi": "^17.0.0-rc9",
+    "lab": "^15.1.0",
     "sequelize": "^3.24.3",
+    "sqlite3": "^3.1.13",
     "sinon": "^1.17.6"
   },
   "peerDependencies": {
     "sequelize": "^3.x"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   }
 }
