@@ -29,8 +29,8 @@
   "author": "Dane Grant",
   "license": "MIT",
   "dependencies": {
-    "glob": "^7.0.3",
-    "joi": "^8.1.0"
+    "glob": "^7.1.2",
+    "joi": "^10.6.0"
   },
   "devDependencies": {
     "code": "^4.0.0",
