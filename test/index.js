@@ -31,6 +31,9 @@ lab.suite('hapi-sequelize', () => {
               dialect: 'sqlite',
               name: 'database_' + process.env.NODE_ENV + '.sqlite',
             },
+            sequelizeOptions: {
+              operatorsAliases: false,
+            },
             models: ['./test/models/**/*.js'],
             sync: true,
             forceSync: true,
@@ -60,6 +63,9 @@ lab.suite('hapi-sequelize', () => {
             database: {
               dialect: 'sqlite',
               name: 'database_' + process.env.NODE_ENV + '.sqlite',
+            },
+            sequelizeOptions: {
+              operatorsAliases: false,
             },
             models: ['./foo/**/*.js'],
             sync: true,
