@@ -1,18 +1,18 @@
 {
-  "extends": ["eslint:recommended"],
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "module"
-  },
-  "rules": {
-    "no-console": 0,
-    "padded-blocks": 0
-  },
+  "extends": "standard",
   "env": {
-    "es6": true,
-    "node": true
+    "node": true,
+    "es6": true
   },
-  "globals": {
-
+  "plugins": [
+    "hapi"
+  ],
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "hapi/hapi-capitalize-modules": "error",
+    "hapi/hapi-scope-start": "off",
+    "hapi/no-arrowception": "error",
+    "no-return-await": "error",
+    "require-await": "error"
   }
 }

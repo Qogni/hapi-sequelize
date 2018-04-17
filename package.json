@@ -30,17 +30,22 @@
   "license": "MIT",
   "dependencies": {
     "glob": "^7.1.2",
-    "joi": "^13.0.1"
+    "joi": "^13.1.2"
   },
   "devDependencies": {
-    "code": "^5.1.0",
-    "coveralls": "^2.11.14",
-    "eslint": "^3.7.1",
-    "hapi": "^17.0.0-rc9",
-    "lab": "^15.1.0",
-    "sequelize": "^3.24.3",
-    "sqlite3": "^3.1.13",
-    "sinon": "^1.17.6"
+    "code": "^5.2.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "hapi": "^17.3.1",
+    "lab": "^15.4.1",
+    "sequelize": "^3.30.4",
+    "sinon": "^1.17.6",
+    "sqlite3": "^4.0.0"
   },
   "peerDependencies": {
     "hapi": "^17.0.0",
