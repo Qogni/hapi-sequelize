@@ -12,13 +12,9 @@ const lab = exports.lab = Lab.script()
 const test = lab.test
 const expect = Code.expect
 
-const connectionString = 'sqlite://database_' + process.env.NODE_ENV + '.sqlite'
-
 lab.suite('hapi-sequelize', () => {
   test('plugin works', { parallel: true }, async () => {
     const server = new Hapi.Server()
-
-    const sequelize = new Sequelize(connectionString)
 
     const onConnect = (database) => {
       server.log('onConnect called')
@@ -31,8 +27,11 @@ lab.suite('hapi-sequelize', () => {
         options: [
           {
             name: 'shop',
+            database: {
+              dialect: 'sqlite',
+              name: 'database_' + process.env.NODE_ENV + '.sqlite',
+            },
             models: ['./test/models/**/*.js'],
-            sequelize: sequelize,
             sync: true,
             forceSync: true,
             onConnect: spy,
@@ -53,15 +52,16 @@ lab.suite('hapi-sequelize', () => {
   test('plugin throws error when no models are found', { parallel: true }, async () => {
     const server = new Hapi.Server()
 
-    const sequelize = new Sequelize(connectionString)
-
     try {
       await server.register(Object.assign(HapiSequelize, {
         options: [
           {
             name: 'foo',
+            database: {
+              dialect: 'sqlite',
+              name: 'database_' + process.env.NODE_ENV + '.sqlite',
+            },
             models: ['./foo/**/*.js'],
-            sequelize: sequelize,
             sync: true,
             forceSync: true,
           },
