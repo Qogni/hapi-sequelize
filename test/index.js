@@ -13,7 +13,7 @@ const test = lab.test
 const expect = Code.expect
 
 lab.suite('hapi-sequelize', () => {
-  test('plugin works', { parallel: true }, async () => {
+  test('plugin works', async () => {
     const server = new Hapi.Server()
 
     const onConnect = (database) => {
@@ -52,7 +52,7 @@ lab.suite('hapi-sequelize', () => {
     }
   })
 
-  test('plugin throws error when no models are found', { parallel: true }, async () => {
+  test('plugin throws error when no models are found', async () => {
     const server = new Hapi.Server()
 
     try {
