@@ -1,42 +1,32 @@
-'use strict';
+'use strict'
 
-// Load modules
-const Lab = require('lab');
-const Code = require('code');
-const Sinon = require('sinon');
-const Hapi = require('hapi');
-const Sequelize = require('sequelize');
+const Lab = require('lab')
+const Code = require('code')
+const Sinon = require('sinon')
+const Hapi = require('hapi')
+const Sequelize = require('sequelize')
+const HapiSequelize = require('../lib')
 
-// Module globals
-const internals = {};
+const lab = exports.lab = Lab.script()
+const test = lab.test
+const expect = Code.expect
 
-// Test shortcuts
-const lab = exports.lab = Lab.script();
-const test = lab.test;
-const expect = Code.expect;
+const connectionString = 'sqlite://database_' + process.env.NODE_ENV + '.sqlite'
 
 lab.suite('hapi-sequelize', () => {
+  test('plugin works', { parallel: true }, async () => {
+    const server = new Hapi.Server()
 
-  test('plugin works', { parallel: true }, (done) => {
+    const sequelize = new Sequelize(connectionString)
 
-    const server = new Hapi.Server();
-    server.connection();
-
-    const sequelize = new Sequelize('shop', 'root', '', {
-      host: '127.0.0.1',
-      port: 3306,
-      dialect: 'mysql'
-    });
-
-    const onConnect = function (database) {
-      server.log('onConnect called');
+    const onConnect = (database) => {
+      server.log('onConnect called')
     }
 
-    const spy = Sinon.spy(onConnect);
+    const spy = Sinon.spy(onConnect)
 
-    server.register([
-      {
-        register: require('../lib'),
+    try {
+      await server.register(Object.assign(HapiSequelize, {
         options: [
           {
             name: 'shop',
@@ -44,48 +34,40 @@ lab.suite('hapi-sequelize', () => {
             sequelize: sequelize,
             sync: true,
             forceSync: true,
-            onConnect: spy
-          }
-        ]
-      }
-    ], (err) => {
-      expect(err).to.not.exist();
-      expect(server.plugins['hapi-sequelize']['shop'].sequelize).to.be.an.instanceOf(Sequelize);
-      expect(spy.getCall(0).args[0]).to.be.an.instanceOf(Sequelize);
-      server.plugins['hapi-sequelize']['shop'].sequelize.query('show tables', { type: Sequelize.QueryTypes.SELECT }).then((tables) => {
-        expect(tables.length).to.equal(6);
-        done();
-      });
-    })
-  });
+            onConnect: spy,
+          },
+        ],
+      }))
 
-  test('plugin throws error when no models are found', { parallel: true }, (done) => {
+      expect(server.plugins['hapi-sequelize']['shop'].sequelize).to.be.an.instanceOf(Sequelize)
+      expect(spy.getCall(0).args[0]).to.be.an.instanceOf(Sequelize)
 
-    const server = new Hapi.Server();
-    server.connection();
+      let tables = await server.plugins['hapi-sequelize']['shop'].sequelize.query('SELECT name FROM sqlite_master WHERE type=\'table\'', { type: Sequelize.QueryTypes.SELECT })
+      expect(tables.filter(table => !table.startsWith('sqlite_')).length).to.equal(6)
+    } catch (err) {
+      expect(err).to.not.exist()
+    }
+  })
 
-    const sequelize = new Sequelize('shop', 'root', '', {
-      host: '127.0.0.1',
-      port: 3306,
-      dialect: 'mysql'
-    });
+  test('plugin throws error when no models are found', { parallel: true }, async () => {
+    const server = new Hapi.Server()
 
-    server.register([
-      {
-        register: require('../lib'),
+    const sequelize = new Sequelize(connectionString)
+
+    try {
+      await server.register(Object.assign(HapiSequelize, {
         options: [
           {
             name: 'foo',
             models: ['./foo/**/*.js'],
             sequelize: sequelize,
             sync: true,
-            forceSync: true
-          }
-        ]
-      }
-    ], (err) => {
-      expect(err).to.exist();
-      done();
-    })
-  });
-});
+            forceSync: true,
+          },
+        ],
+      }))
+    } catch (err) {
+      expect(err).to.exist()
+    }
+  })
+})
