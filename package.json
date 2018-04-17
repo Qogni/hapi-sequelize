@@ -1,5 +1,5 @@
 {
-  "name": "hapi-sequelize",
+  "name": "@qogni/hapi-sequelize",
   "version": "4.0.0",
   "description": "A Hapi plugin for the fabulous Sequelize ORM",
   "main": "lib/index.js",
